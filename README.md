@@ -8,7 +8,7 @@ This dbt package is for the Bing Ads data unification Ingested by [Daton](https:
 
 #### Typical challanges with raw data are:
 - Array/Nested Array columns which makes queries for Data Analytics complex
-- Data duplication due to look back period while fetching report data from Amazon Seller Partner
+- Data duplication due to look back period while fetching report data from Bing Ads
 - Seperate tables at marketplaces/Store, brand, account level for same kind of report/data feeds
 
 By doing Data Unification the above challenges can be overcomed and simplifies Data Analytics. 
@@ -51,7 +51,7 @@ vars:
 
 ## Setting Target Schema
 
-Models will be create unified tables under the schema (<target_schema>_stg_amazon). In case, you would like the models to be written to the target schema or a different custom schema, please add the following in the dbt_project.yml file.
+Models will be create unified tables under the schema (<target_schema>_stg_bingads). In case, you would like the models to be written to the target schema or a different custom schema, please add the following in the dbt_project.yml file.
 
 ```yaml
 models:
@@ -101,7 +101,7 @@ AdPerformanceReport: False
 
 ## Models
 
-This package contains models from the Amazon Selling Partner API which includes reports on {{sales, margin, inventory, product}}. The primary outputs of this package are described below.
+This package contains models from the Bing Ads API which includes reports on {{sales, margin, inventory, product}}. The primary outputs of this package are described below.
 
 | **Category**                 | **Model**  | **Description** |
 | ------------------------- | ---------------| ----------------------- |
