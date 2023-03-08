@@ -26,6 +26,9 @@ Daton Integrations for
 - Bing Ads 
 - Exchange Rates(Optional, if currency conversion is not required)
 
+*Note:* 
+*Please select 'Do Not Unnest' option while setting up Daton Integrataion*
+
 # Installation & Configuration
 
 ## Installation Instructions
@@ -35,7 +38,7 @@ If you haven't already, you will need to create a packages.yml file in your DBT 
 ```yaml
 packages:
   - package: saras-daton/bing_ads
-    version: {{1.0.0}}
+    version: v1.0.0
 ```
 
 # Configuration 
@@ -56,7 +59,7 @@ Models will be create unified tables under the schema (<target_schema>_stg_binga
 ```yaml
 models:
   bing_ads:
-    +schema: custom_schema_name
+    +schema: custom_schema_extension
 ```
 
 ## Optional Variables
@@ -84,8 +87,8 @@ Example:
 vars:
 timezone_conversion_flag: False
 raw_table_timezone_offset_hours: {
-  "edm-saras.EDM_Daton.Brand_US_BingAds_180494538_ad_performance_report" : 7,
-  "edm-saras.EDM_Daton.Brand_US_BingAds_180494538_search_query_performance_report" : 5
+  "Bing.Ads.Brand_UK_BingAds_180494538_ad_performance_report" : -7,
+  "Bing.Ads.Brand_UK_BingAds_180494538_search_query_performance_report" : -7
 }
 ```
 
@@ -137,6 +140,6 @@ models:
 
 
 ## Resources:
-- Have questions, feedback, or need [help](https://calendly.com/priyanka-vankadaru/30min)? Schedule a call with our data experts or email us at info@sarasanalytics.com.
+- Have questions, feedback, or need [help](https://calendly.com/srinivas-janipalli/30min)? Schedule a call with our data experts or email us at info@sarasanalytics.com.
 - Learn more about Daton [here](https://sarasanalytics.com/daton/).
 - Refer [this](https://youtu.be/6zDTbM6OUcs) to know more about how to create a dbt account & connect to {{Bigquery/Snowflake}}
