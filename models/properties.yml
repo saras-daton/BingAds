@@ -1,0 +1,19 @@
+version: 2
+models:
+  - name: AdPerformanceReport
+    description: A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad
+    config: 
+      materialized: incremental 
+      incremental_strategy: merge 
+      unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'] 
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      cluster_by : ['AccountNumber','AdId']
+
+  - name: SearchQueryPerformanceReport	
+    description: A report on keywords, what your audience is searching for when your ads are shown
+    config:
+      materialized: incremental 
+      incremental_strategy: merge 
+      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      cluster_by : ['AccountNumber','AdId']

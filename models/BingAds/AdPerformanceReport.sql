@@ -1,23 +1,16 @@
-    -- depends_on: {{ ref('ExchangeRates') }}
-{% if var('table_partition_flag') %}
-{{config( 
-    materialized='incremental', 
-    incremental_strategy='merge', 
-    partition_by = { 'field': 'TimePeriod', 'data_type': 'date' },
-    cluster_by = ['AccountNumber','AdId'], 
-    unique_key = ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'])}}
+
+{% if var('AdPerformanceReport') %}
+    {{ config( enabled = True ) }}
 {% else %}
-{{config( 
-    materialized='incremental', 
-    incremental_strategy='merge', 
-    unique_key = ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'])}}
+    {{ config( enabled = False ) }}
 {% endif %}
 
--- depends_on: {{ref('ExchangeRates')}}
-
+{% if var('currency_conversion_flag') %}
+ --depends_on: {{ ref('ExchangeRates') }}
+{% endif %}
 {% if is_incremental() %}
 {%- set max_loaded_query -%}
-SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }}
+SELECT coalesce(MAX({{daton_batch_runtime()}}) - 2592000000,0) FROM {{ this }}
 {% endset %}
 
 {%- set max_loaded_results = run_query(max_loaded_query) -%}
@@ -30,37 +23,44 @@ SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }}
 {% endif %}
 
 {% set table_name_query %}
-select concat('`', table_catalog,'.',table_schema, '.',table_name,'`') as tables 
-from {{ var('raw_projectid') }}.{{ var('raw_dataset') }}.INFORMATION_SCHEMA.TABLES
-where lower(table_name) like '%ad_performance_report' 
+{{set_table_name('%ad_performance_report')}}    
 {% endset %}  
-
-
 
 {% set results = run_query(table_name_query) %}
 
 {% if execute %}
-{# Return the first column #}
-{% set results_list = results.columns[0].values() %}
+    {# Return the first column #}
+    {% set results_list = results.columns[0].values() %}
+    {% set tables_lowercase_list = results.columns[1].values() %}
 {% else %}
-{% set results_list = [] %}
-{% endif %}
-
-{% if var('timezone_conversion_flag') %}
-    {% set hr = var('timezone_conversion_hours') %}
+    {% set results_list = [] %}
+    {% set tables_lowercase_list = [] %}
 {% endif %}
 
 {% for i in results_list %}
-    {% if var('brand_consolidation_flag') %}
-        {% set brand =i.split('.')[2].split('_')[var('brand_name_position')] %}
-    {% else %}
-        {% set brand = var('brand_name') %}
-    {% endif %}
+        {% if var('get_brandname_from_tablename_flag') %}
+            {% set brand =i.split('.')[2].split('_')[var('brandname_position_in_tablename')] %}
+        {% else %}
+            {% set brand = var('default_brandname') %}
+        {% endif %}
 
-    SELECT * except(row_num)
+        {% if var('get_storename_from_tablename_flag') %}
+            {% set store =i.split('.')[2].split('_')[var('storename_position_in_tablename')] %}
+        {% else %}
+            {% set store = var('default_storename') %}
+        {% endif %}
+
+        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list %}
+            {% set hr = var('raw_table_timezone_offset_hours')[i] %}
+        {% else %}
+            {% set hr = 0 %}
+        {% endif %}
+
+    SELECT * {{exclude()}} (row_num)
     From (
         select
         '{{brand}}' as brand,
+        '{{store}}' as store,
         AccountId,
         AccountName,
         COALESCE(AccountNumber,'') as AccountNumber,
@@ -119,33 +119,28 @@ where lower(table_name) like '%ad_performance_report'
         coalesce(TopVsOther,'') as TopVsOther,
         TrackingTemplate,
         {% if var('currency_conversion_flag') %}
-            c.value as exchange_currency_rate,
-            c.from_currency_code as exchange_currency_code, 
+            case when c.value is null then 1 else c.value end as exchange_currency_rate,
+            case when c.from_currency_code is null then a.CurrencyCode else c.from_currency_code end as exchange_currency_code,
         {% else %}
             cast(1 as decimal) as exchange_currency_rate,
-            cast(null as string) as exchange_currency_code, 
+            a.CurrencyCode as exchange_currency_code, 
         {% endif %}
-        a._daton_user_id,
-        a._daton_batch_runtime,
-        a._daton_batch_id,
-        {% if var('timezone_conversion_flag') %}
-            DATETIME_ADD(TIMESTAMP_MILLIS(cast(a._daton_batch_runtime as int)), INTERVAL {{hr}} HOUR ) as _edm_eff_strt_ts,
-        {% else %}
-            TIMESTAMP_MILLIS(cast(a._daton_batch_runtime as int)) _edm_eff_strt_ts,
-        {% endif %}
-        null as _edm_eff_end_ts,
-        unix_micros(current_timestamp()) as _edm_runtime,
-        DENSE_RANK() OVER (PARTITION BY TimePeriod ,AccountNumber,AdId,TopVsOther,Network,DeliveredMatchType,BidMatchType,DeviceOS order by a._daton_batch_runtime desc) row_num
+        a.{{daton_user_id()}} as _daton_user_id,
+        a.{{daton_batch_runtime()}} as _daton_batch_runtime,
+        a.{{daton_batch_id()}} as _daton_batch_id,
+        current_timestamp() as _last_updated,
+        '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
+        DENSE_RANK() OVER (PARTITION BY TimePeriod ,AccountNumber,AdId,TopVsOther,Network,DeliveredMatchType,BidMatchType,DeviceOS order by a.{{daton_batch_runtime()}} desc) row_num
         from {{i}} a  
             {% if var('currency_conversion_flag') %}
                 left join {{ref('ExchangeRates')}} c on date(TimePeriod) = c.date and a.CurrencyCode = c.to_currency_code
             {% endif%}
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
-            WHERE a._daton_batch_runtime  >= {{max_loaded}}
+            WHERE a.{{daton_batch_runtime()}}  >= {{max_loaded}}
             --WHERE 1=1
             {% endif %}
         )
     where row_num =1 
     {% if not loop.last %} union all {% endif %}
-{% endfor %}
+    {% endfor %}
