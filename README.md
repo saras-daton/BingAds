@@ -87,8 +87,16 @@ Example:
 vars:
 timezone_conversion_flag: False
 raw_table_timezone_offset_hours: {
-  "Bing.Ads.Brand_UK_BingAds_180494538_ad_performance_report" : -7,
-  "Bing.Ads.Brand_UK_BingAds_180494538_search_query_performance_report" : -7
+    "Bing.Ads.Brand_US_BingAds_180494538_account_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_by_keyword_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_detail_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_audience_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_campaign_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_conversion_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_goals_and_funnels_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_keyword_performance_report" : -7,
+    "Bing.Ads.Brand_UK_BingAds_180494538_ad_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_search_query_performance_report" : -7
 }
 ```
 
@@ -108,7 +116,15 @@ This package contains models from the Bing Ads API which includes reports on {{s
 
 | **Category**                 | **Model**  | **Description** |
 | ------------------------- | ---------------| ----------------------- |
-|Performance | [AdPerformanceReport](models/BingAds/AdPerformanceReport.sql)  | A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad |
+|Performance | [BingAccountPerformanceReport](models/BingAds/BingAccountPerformanceReport.sql)  | This report provides long-term account performance and trends using impressions, clicks, spend, and average cost per click for individual accounts |
+|AdExtension | [BingAdExtensionByKeywordReport](models/BingAds/BingAdExtensionByKeywordReport.sql)  |This report helps compare how well different versions of your ad extensions are performing for each keyword. |
+|AdExtension | [BingAdExtensionDetailReport](models/BingAds/BingAdExtensionDetailReport.sql)  | This report provides a detailed and closer look at how each ad extension is performing based on click type for ads  |
+|Performance | [BingAdPerformanceReport](models/BingAds/BingAdPerformanceReport.sql)  | A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad |
+|Performance | [BingAudiencePerformanceReport](models/BingAds/BingAudiencePerformanceReport.sql)  |This report helps compare delivery performance statistics by audience, ad group, campaign, or account attributes. |
+|Performance | [BingCampaignPerformanceReport](models/BingAds/BingCampaignPerformanceReport.sql)  | This report helps view high-level performance statistics and quality attributes for each campaign or account. |
+|Performance | [BingConversionPerformanceReport](models/BingAds/BingConversionPerformanceReport.sql)  |This report helps understand which campaigns and keywords are leading an audience to complete a purchase or other conversion action |
+|Performance | [BingGoalsAndFunnelsReport](models/BingAds/BingGoalsAndFunnelsReport.sql)  | This report helps discover whether your audience completes each step through the land, browse, prospect, and conversion pages of your website |
+|Performance | [BingKeywordPerformanceReport](models/BingAds/BingKeywordPerformanceReport.sql)  | This report depicts which keywords are performing well and those that are not |
 |Performance | [SearchQueryPerformanceReport](models/BingAds/SearchQueryPerformanceReport.sql)  | A report on keywords search terms that have triggered your ads |
 
 
