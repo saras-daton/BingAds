@@ -1,4 +1,4 @@
-{% if var('SearchQueryPerformanceReport') %}
+{% if var('searchqueryperformancereport') %}
     {{ config( enabled = True ) }}
 {% else %}
     {{ config( enabled = False ) }}
@@ -99,7 +99,7 @@ SELECT coalesce(MAX({{daton_batch_runtime()}}) - 2592000000,0) FROM {{ this }}
         RevenuePerConversion ,
         COALESCE(SearchQuery,'') as SearchQuery,
         Spend ,
-        cast(TimePeriod as date)TimePeriod ,
+        CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,
         coalesce(TopVsOther,'') as TopVsOther,
         {{daton_user_id()}} as _daton_user_id,
         {{daton_batch_runtime()}} as _daton_batch_runtime,

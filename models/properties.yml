@@ -1,19 +1,92 @@
 version: 2
 models:
-  - name: AdPerformanceReport
+  - name: accountperformancereport
+    description: A report
+    config : 
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType','impressions']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AccountNumber']
+
+
+  - name: adextensionbykeywordreport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AccountNumber']
+ 
+  - name: adextensiondetailreport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['AccountName','AdExtensionId','adGroupId','AdId','CampaignId','DeliveredMatchType','DeviceOS','DeviceType','Network']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AdExtensionId']
+
+  - name: adperformancereport
     description: A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad
     config: 
-      materialized: incremental 
-      incremental_strategy: merge 
+      materialized : incremental 
+      incremental_strategy : merge 
       unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'] 
-      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']
 
-  - name: SearchQueryPerformanceReport	
+  - name: audienceperformancereport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['adGroupId','campaignId','AudienceId']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AudienceId']
+ 
+  - name: campaignperformancereport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['CampaignId','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['CampaignId']
+ 
+  - name: conversionperformancereport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge
+      unique_key : ['AdGroupId','KeywordId','DeviceType','impressions']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AdGroupId']
+ 
+  - name: goalsandfunnelsreport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['campaignId','KeywordId','GoalId','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['campaignId']
+ 
+  - name: keywordperformancereport
+    description: A report
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['CampaignId','adGroupId','KeywordId','AdId','DeliveredMatchType','BidMatchType','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['CampaignId']
+
+  - name: searchqueryperformancereport
     description: A report on keywords, what your audience is searching for when your ads are shown
     config:
-      materialized: incremental 
-      incremental_strategy: merge 
+      materialized : incremental 
+      incremental_strategy : merge 
       unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']

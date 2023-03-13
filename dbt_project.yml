@@ -25,16 +25,31 @@ vars:
   default_storename: "" 
     # Example- default_storename: "US" --> for Single Store users, with no Storename in Daton Integration Name
 
-  currency_conversion_flag: False
-  timezone_conversion_flag: False
+  currency_conversion_flag: True
+  timezone_conversion_flag: True
   raw_table_timezone_offset_hours: {
+    "Bing.Ads.Brand_US_BingAds_180494538_account_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_by_keyword_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_detail_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_audience_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_campaign_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_conversion_performance_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_goals_and_funnels_report" : -7,
+    "Bing.Ads.Brand_US_BingAds_180494538_keyword_performance_report" : -7,
     "Bing.Ads.Brand_UK_BingAds_180494538_ad_performance_report" : -7,
-    "Bing.Ads.Brand_UK_BingAds_180494538_search_query_performance_report" : -7
+    "Bing.Ads.Brand_US_BingAds_180494538_search_query_performance_report" : -7
     }
       # Above are Example entries for raw table level input offset hours
-
-  AdPerformanceReport : True
-  SearchQueryPerformanceReport: True
+  accountperformancereport : True
+  adextensionbykeywordreport : True
+  adextensiondetailreport : True
+  adperformancereport : True
+  audienceperformancereport : True
+  campaignperformancereport : True
+  conversionperformancereport : True
+  goalsandfunnelsreport : True
+  keywordperformancereport : True
+  searchqueryperformancereport: True
 
   
 # These configurations specify where dbt should look for different types of files.
