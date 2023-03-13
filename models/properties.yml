@@ -1,7 +1,7 @@
 version: 2
 models:
-  - name: accountperformancereport
-    description: A report
+  - name: BingAccountPerformanceReport
+    description: This report provides long-term account performance and trends using impressions, clicks, spend, and average cost per click for individual accounts
     config : 
       materialized : incremental
       incremental_strategy : merge 
@@ -10,8 +10,8 @@ models:
       cluster_by : ['AccountNumber']
 
 
-  - name: adextensionbykeywordreport
-    description: A report
+  - name: BingAdExtensionByKeywordReport
+    description: This report helps compare how well different versions of your ad extensions are performing for each keyword.
     config:
       materialized : incremental
       incremental_strategy : merge 
@@ -19,8 +19,8 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber']
  
-  - name: adextensiondetailreport
-    description: A report
+  - name: BingAdExtensionDetailReport
+    description: This report provides a detailed and closer look at how each ad extension is performing based on click type for ads 
     config:
       materialized : incremental
       incremental_strategy : merge 
@@ -28,7 +28,7 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AdExtensionId']
 
-  - name: adperformancereport
+  - name: BingAdPerformanceReport
     description: A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad
     config: 
       materialized : incremental 
@@ -37,8 +37,8 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']
 
-  - name: audienceperformancereport
-    description: A report
+  - name: BingAudiencePerformanceReport
+    description: This report helps compare delivery performance statistics by audience, ad group, campaign, or account attributes.
     config:
       materialized : incremental
       incremental_strategy : merge 
@@ -46,8 +46,8 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AudienceId']
  
-  - name: campaignperformancereport
-    description: A report
+  - name: BingCampaignPerformanceReport
+    description: This report helps view high-level performance statistics and quality attributes for each campaign or account.
     config:
       materialized : incremental
       incremental_strategy : merge 
@@ -55,8 +55,8 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['CampaignId']
  
-  - name: conversionperformancereport
-    description: A report
+  - name: BingConversionPerformanceReport
+    description: This report helps understand which campaigns and keywords are leading an audience to complete a purchase or other conversion action
     config:
       materialized : incremental
       incremental_strategy : merge
@@ -64,8 +64,8 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AdGroupId']
  
-  - name: goalsandfunnelsreport
-    description: A report
+  - name: BingGoalsAndFunnelsReport
+    description: This report helps discover whether your audience completes each step through the land, browse, prospect, and conversion pages of your website
     config:
       materialized : incremental
       incremental_strategy : merge 
@@ -73,8 +73,8 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['campaignId']
  
-  - name: keywordperformancereport
-    description: A report
+  - name: BingKeywordPerformanceReport
+    description: This report depicts which keywords are performing well and those that are not
     config:
       materialized : incremental
       incremental_strategy : merge 
@@ -82,7 +82,7 @@ models:
       partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['CampaignId']
 
-  - name: searchqueryperformancereport
+  - name: BingSearchQueryPerformanceReport
     description: A report on keywords, what your audience is searching for when your ads are shown
     config:
       materialized : incremental 

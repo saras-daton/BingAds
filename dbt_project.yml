@@ -25,8 +25,8 @@ vars:
   default_storename: "" 
     # Example- default_storename: "US" --> for Single Store users, with no Storename in Daton Integration Name
 
-  currency_conversion_flag: True
-  timezone_conversion_flag: True
+  currency_conversion_flag: False
+  timezone_conversion_flag: False
   raw_table_timezone_offset_hours: {
     "Bing.Ads.Brand_US_BingAds_180494538_account_performance_report" : -7,
     "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_by_keyword_report" : -7,
@@ -40,16 +40,16 @@ vars:
     "Bing.Ads.Brand_US_BingAds_180494538_search_query_performance_report" : -7
     }
       # Above are Example entries for raw table level input offset hours
-  accountperformancereport : True
-  adextensionbykeywordreport : True
-  adextensiondetailreport : True
-  adperformancereport : True
-  audienceperformancereport : True
-  campaignperformancereport : True
-  conversionperformancereport : True
-  goalsandfunnelsreport : True
-  keywordperformancereport : True
-  searchqueryperformancereport: True
+  BingAccountPerformanceReport : True
+  BingAdExtensionByKeywordReport : True
+  BingAdExtensionDetailReport : True
+  BingAdPerformanceReport : True
+  BingAudiencePerformanceReport : True
+  BingCampaignPerformanceReport : True
+  BingConversionPerformanceReport : True
+  BingGoalsAndFunnelsReport : True
+  BingKeywordPerformanceReport : True
+  BingSearchQueryPerformanceReport: True
 
   
 # These configurations specify where dbt should look for different types of files.

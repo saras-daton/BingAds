@@ -1,4 +1,4 @@
-{% if var('conversionperformancereport') %}
+{% if var('BingAudiencePerformanceReport') %}
     {{ config( enabled = True ) }}
 {% else %}
     {{ config( enabled = False ) }}
@@ -21,7 +21,7 @@
 
 
     {% set table_name_query %}
-    {{set_table_name('%conversion_performance_report')}}    
+    {{set_table_name('%audience_performance_report')}}    
     {% endset %}  
 
     {% set results = run_query(table_name_query) %}
@@ -48,7 +48,7 @@
             {% set store = var('default_storename') %}
         {% endif %}
 
-        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list %}
+        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list and i in var('raw_table_timezone_offset_hours') %}
             {% set hr = var('raw_table_timezone_offset_hours')[i] %}
         {% else %}
             {% set hr = 0 %}
@@ -60,39 +60,40 @@
         select
         '{{brand}}' as brand,
         '{{store}}' as store,
+        AccountId	,		
         AccountName	,		
         AccountNumber	,		
-        AccountId	,		
-        CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,		
-        CampaignName	,		
-        CampaignId	,		
-        AdGroupName	,		
+        AccountStatus	,		
         AdGroupId	,		
-        Keyword	,		
-        KeywordId	,		
-        Impressions	,		
-        Clicks	,		
-        Ctr	,		
-        Assists	,		
-        Conversions	,		
-        ConversionRate	,		
-        Spend	,		
-        Revenue	,		
-        ReturnOnAdSpend	,		
-        CostPerConversion	,		
-        CostPerAssist	,		
-        RevenuePerConversion	,		
-        RevenuePerAssist	,		
-        DeviceType	,		
-        CampaignStatus	,		
+        AdGroupName	,		
         AdGroupStatus	,		
-        KeywordStatus	,		
+        AudienceId	,		
+        AudienceName	,		
+        AudienceType	,		
+        AverageCpc	,		
+        AveragePosition	,		
+        BidAdjustment	,		
+        CampaignId	,		
+        CampaignName	,		
+        CampaignStatus	,		
+        Clicks	,		
+        ConversionRate	,		
+        Conversions	,		
+        CostPerConversion	,		
+        Ctr	,		
+        Impressions	,		
+        ReturnOnAdSpend	,		
+        Revenue	,		
+        RevenuePerConversion	,		
+        Spend	,		
+        TargetingSetting	,		
+        CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,	
 	   	{{daton_user_id()}} as _daton_user_id,
         {{daton_batch_runtime()}} as _daton_batch_runtime,
         {{daton_batch_id()}} as _daton_batch_id,
         current_timestamp() as _last_updated,
         '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
-        Row_NUMBER() OVER (PARTITION BY AdGroupId,KeywordId,DeviceType,impressions order by TimePeriod desc) row_num
+        ROW_NUMBER() OVER (PARTITION BY adGroupId,campaignId,AudienceId order by TimePeriod desc) row_num
         from {{i}}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}

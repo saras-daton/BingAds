@@ -1,9 +1,8 @@
-{% if var('adextensiondetailreport') %}
+{% if var('BingGoalsAndFunnelsReport') %}
     {{ config( enabled = True ) }}
 {% else %}
     {{ config( enabled = False ) }}
 {% endif %}
-
 
     {% if is_incremental() %}
     {%- set max_loaded_query -%}
@@ -21,7 +20,7 @@
 
 
     {% set table_name_query %}
-    {{set_table_name('%ad_extension_detail_report')}}    
+    {{set_table_name('%goals_and_funnels_report')}}    
     {% endset %}  
 
     {% set results = run_query(table_name_query) %}
@@ -48,7 +47,7 @@
             {% set store = var('default_storename') %}
         {% endif %}
 
-        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list %}
+        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list and i in var('raw_table_timezone_offset_hours') %}
             {% set hr = var('raw_table_timezone_offset_hours')[i] %}
         {% else %}
             {% set hr = 0 %}
@@ -60,49 +59,34 @@
         select
         '{{brand}}' as brand,
         '{{store}}' as store,
-        AccountName	,		
         AccountId	,		
+        AccountName	,		
+        AccountNumber	,		
         AccountStatus	,		
-        AdExtensionId	,		
-        AdExtensionPropertyValue	,		
-        AdExtensionType	,		
-        AdExtensionTypeId	,		
-        AdExtensionVersion	,		
-        AdGroupName	,		
         AdGroupId	,		
+        AdGroupName	,		
         AdGroupStatus	,		
-        AdId	,		
-        AdStatus	,		
-        AdTitle	,		
         Assists	,		
-        AverageCpc	,		
         CampaignId	,		
         CampaignName	,		
         CampaignStatus	,		
-        Clicks	,		
-        ConversionRate	,		
-        Conversions	,		
-        CostPerAssist	,		
-        CostPerConversion	,		
-        Ctr	,		
-        DeliveredMatchType	,		
+        AllConversions	,		
         DeviceOS	,		
         DeviceType	,		
-        Impressions	,		
-        Network	,		
-        ReturnOnAdSpend	,		
-        Revenue	,		
-        RevenuePerAssist	,		
-        RevenuePerConversion	,		
-        Spend	,		
-        CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,		
-        TopVsOther	,		
+        Goal	,		
+        GoalId	,		
+        GoalType	,		
+        Keyword	,		
+        KeywordId	,		
+        KeywordStatus	,		
+        AllRevenue	,		
+        CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,	
 	   	{{daton_user_id()}} as _daton_user_id,
         {{daton_batch_runtime()}} as _daton_batch_runtime,
         {{daton_batch_id()}} as _daton_batch_id,
         current_timestamp() as _last_updated,
         '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
-        ROW_NUMBER() OVER (PARTITION BY  AccountName,AdExtensionId,adGroupId,AdId,CampaignId,DeliveredMatchType,Network,DeviceOS,DeviceType order by TimePeriod desc) row_num
+        ROW_NUMBER() OVER (PARTITION BY campaignId,KeywordId,GoalId,DeviceOS order by TimePeriod desc) row_num
         from {{i}}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
@@ -112,4 +96,4 @@
         )
     where row_num =1 
     {% if not loop.last %} union all {% endif %}
-{% endfor %}	
+{% endfor %}		

@@ -1,12 +1,9 @@
-{% if var('keywordperformancereport') %}
+{% if var('BingConversionPerformanceReport') %}
     {{ config( enabled = True ) }}
 {% else %}
     {{ config( enabled = False ) }}
 {% endif %}
 
-{% if var('currency_conversion_flag') %}
- --depends_on: {{ ref('ExchangeRates') }}
-{% endif %}
 
     {% if is_incremental() %}
     {%- set max_loaded_query -%}
@@ -24,7 +21,7 @@
 
 
     {% set table_name_query %}
-    {{set_table_name('%keyword_performance_report')}}    
+    {{set_table_name('%conversion_performance_report')}}    
     {% endset %}  
 
     {% set results = run_query(table_name_query) %}
@@ -51,7 +48,7 @@
             {% set store = var('default_storename') %}
         {% endif %}
 
-        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list %}
+        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list and i in var('raw_table_timezone_offset_hours') %}
             {% set hr = var('raw_table_timezone_offset_hours')[i] %}
         {% else %}
             {% set hr = 0 %}
@@ -73,73 +70,33 @@
         AdGroupId	,		
         Keyword	,		
         KeywordId	,		
-        AdId	,		
-        AdType	,		
-        DestinationUrl	,		
-        CurrentMaxCpc	,		
-        CurrencyCode	,		
-        DeliveredMatchType	,		
-        AdDistribution	,		
         Impressions	,		
         Clicks	,		
         Ctr	,		
-        AverageCpc	,		
-        Spend	,		
-        AveragePosition	,		
+        Assists	,		
         Conversions	,		
         ConversionRate	,		
-        CostPerConversion	,		
-        BidMatchType	,		
-        DeviceType	,		
-        QualityScore	,		
-        ExpectedCtr	,		
-        AdRelevance	,		
-        LandingPageExperience	,		
-        Language	,		
-        QualityImpact	,		
-        CampaignStatus	,		
-        AccountStatus	,		
-        AdGroupStatus	,		
-        KeywordStatus	,		
-        Network	,		
-        TopVsOther	,		
-        DeviceOS	,		
-        Assists	,		
+        Spend	,		
         Revenue	,		
         ReturnOnAdSpend	,		
+        CostPerConversion	,		
         CostPerAssist	,		
         RevenuePerConversion	,		
         RevenuePerAssist	,		
-        TrackingTemplate	,		
-        CustomParameters	,		
-        FinalUrl	,		
-        FinalMobileUrl	,		
-        FinalAppUrl	,		
-        BidStrategyType	,		
-        KeywordLabels	,		
-        Mainline1Bid	,		
-        MainlineBid	,		
-        FirstPageBid,		
-        {% if var('currency_conversion_flag') %}
-            case when c.value is null then 1 else c.value end as exchange_currency_rate,
-            case when c.from_currency_code is null then a.CurrencyCode else c.from_currency_code end as exchange_currency_code,
-        {% else %}
-            cast(1 as decimal) as exchange_currency_rate,
-            a.CurrencyCode as exchange_currency_code, 
-        {% endif %}
-	   	a.{{daton_user_id()}} as _daton_user_id,
-        a.{{daton_batch_runtime()}} as _daton_batch_runtime,
-        a.{{daton_batch_id()}} as _daton_batch_id,
+        DeviceType	,		
+        CampaignStatus	,		
+        AdGroupStatus	,		
+        KeywordStatus	,		
+	   	{{daton_user_id()}} as _daton_user_id,
+        {{daton_batch_runtime()}} as _daton_batch_runtime,
+        {{daton_batch_id()}} as _daton_batch_id,
         current_timestamp() as _last_updated,
         '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
-        ROW_NUMBER() OVER (PARTITION BY CampaignId,adGroupId,KeywordId,AdId,DeliveredMatchType,BidMatchType,DeviceOS order by TimePeriod desc) row_num
-        from {{i}} a  
-            {% if var('currency_conversion_flag') %}
-                left join {{ref('ExchangeRates')}} c on date(TimePeriod) = c.date and a.CurrencyCode = c.to_currency_code
-            {% endif%}	
+        Row_NUMBER() OVER (PARTITION BY AdGroupId,KeywordId,DeviceType,impressions order by TimePeriod desc) row_num
+        from {{i}}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
-            WHERE a.{{daton_batch_runtime()}}  >= {{max_loaded}}
+            WHERE {{daton_batch_runtime()}}  >= {{max_loaded}}
             --WHERE 1=1
             {% endif %}
         )
