@@ -125,7 +125,7 @@ This package contains models from the Bing Ads API which includes reports on {{s
 |Performance | [BingConversionPerformanceReport](models/BingAds/BingConversionPerformanceReport.sql)  |This report helps understand which campaigns and keywords are leading an audience to complete a purchase or other conversion action |
 |Performance | [BingGoalsAndFunnelsReport](models/BingAds/BingGoalsAndFunnelsReport.sql)  | This report helps discover whether your audience completes each step through the land, browse, prospect, and conversion pages of your website |
 |Performance | [BingKeywordPerformanceReport](models/BingAds/BingKeywordPerformanceReport.sql)  | This report depicts which keywords are performing well and those that are not |
-|Performance | [SearchQueryPerformanceReport](models/BingAds/SearchQueryPerformanceReport.sql)  | A report on keywords search terms that have triggered your ads |
+|Performance | [BingSearchQueryPerformanceReport](models/BingAds/BingSearchQueryPerformanceReport.sql)  | A report on keywords search terms that have triggered your ads |
 
 
 ### For details about default configurations for Table Primary Key columns, Partition columns, Clustering columns, please refer the properties.yaml used for this package as below. 
@@ -133,22 +133,22 @@ This package contains models from the Bing Ads API which includes reports on {{s
 ```yaml
 version: 2
 models:
-  - name: AdPerformanceReport
+  - name: BingAdPerformanceReport
     description: A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad
     config: 
       materialized: incremental 
       incremental_strategy: merge 
       unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'] 
-      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']
 
-  - name: SearchQueryPerformanceReport	
+  - name: BingSearchQueryPerformanceReport	
     description: A report on keywords, what your audience is searching for when your ads are shown
     config:
       materialized: incremental 
       incremental_strategy: merge 
       unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']
 
 ```
