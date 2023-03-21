@@ -38,7 +38,7 @@ If you haven't already, you will need to create a packages.yml file in your DBT 
 ```yaml
 packages:
   - package: saras-daton/bing_ads
-    version: v1.0.0
+    version: v1.1.0
 ```
 
 # Configuration 
@@ -87,11 +87,21 @@ Example:
 vars:
 timezone_conversion_flag: False
 raw_table_timezone_offset_hours: {
-  "Bing.Ads.Brand_UK_BingAds_180494538_ad_performance_report" : -7,
-  "Bing.Ads.Brand_UK_BingAds_180494538_search_query_performance_report" : -7
+    "Bing.Ads.Brand_US_BingAds_180494538_account_performance_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_by_keyword_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_detail_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_audience_performance_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_campaign_performance_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_conversion_performance_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_goals_and_funnels_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_keyword_performance_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_ad_performance_report" : -6,
+    "Bing.Ads.Brand_US_BingAds_180494538_search_query_performance_report" : -6
 }
-```
 
+Note : Here, '-6' is given as the offset hour as per the time difference between UTC and US timezones. Provide the offset hour accordingly for each table based on your data.
+
+```
 ### Table Exclusions
 
 If you need to exclude any of the models, declare the model names as variables and mark them as False. Refer the table below for model details. By default, all tables are created.
@@ -99,7 +109,7 @@ If you need to exclude any of the models, declare the model names as variables a
 Example:
 ```yaml
 vars:
-AdPerformanceReport: False
+BingAdPerformanceReport: False
 ```
 
 ## Models
@@ -108,8 +118,16 @@ This package contains models from the Bing Ads API which includes reports on {{s
 
 | **Category**                 | **Model**  | **Description** |
 | ------------------------- | ---------------| ----------------------- |
-|Performance | [AdPerformanceReport](models/BingAds/AdPerformanceReport.sql)  | A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad |
-|Performance | [SearchQueryPerformanceReport](models/BingAds/SearchQueryPerformanceReport.sql)  | A report on keywords search terms that have triggered your ads |
+|Performance | [BingAccountPerformanceReport](models/BingAds/BingAccountPerformanceReport.sql)  | This report provides long-term account performance and trends using impressions, clicks, spend, and average cost per click for individual accounts |
+|AdExtension | [BingAdExtensionByKeywordReport](models/BingAds/BingAdExtensionByKeywordReport.sql)  |This report helps compare how well different versions of your ad extensions are performing for each keyword. |
+|AdExtension | [BingAdExtensionDetailReport](models/BingAds/BingAdExtensionDetailReport.sql)  | This report provides a detailed and closer look at how each ad extension is performing based on click type for ads  |s
+|Performance | [BingAdPerformanceReport](models/BingAds/BingAdPerformanceReport.sql)  | A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad |
+|Performance | [BingAudiencePerformanceReport](models/BingAds/BingAudiencePerformanceReport.sql)  |This report helps compare delivery performance statistics by audience, ad group, campaign, or account attributes. |
+|Performance | [BingCampaignPerformanceReport](models/BingAds/BingCampaignPerformanceReport.sql)  | This report helps view high-level performance statistics and quality attributes for each campaign or account. |
+|Performance | [BingConversionPerformanceReport](models/BingAds/BingConversionPerformanceReport.sql)  |This report helps understand which campaigns and keywords are leading an audience to complete a purchase or other conversion action |
+|Performance | [BingGoalsAndFunnelsReport](models/BingAds/BingGoalsAndFunnelsReport.sql)  | This report helps discover whether your audience completes each step through the land, browse, prospect, and conversion pages of your website |
+|Performance | [BingKeywordPerformanceReport](models/BingAds/BingKeywordPerformanceReport.sql)  | This report depicts which keywords are performing well and those that are not |
+|Performance | [BingSearchQueryPerformanceReport](models/BingAds/BingSearchQueryPerformanceReport.sql)  | A report on keywords search terms that have triggered your ads |
 
 
 ### For details about default configurations for Table Primary Key columns, Partition columns, Clustering columns, please refer the properties.yaml used for this package as below. 
@@ -117,23 +135,97 @@ This package contains models from the Bing Ads API which includes reports on {{s
 ```yaml
 version: 2
 models:
-  - name: AdPerformanceReport
+  - name: BingAccountPerformanceReport
+    description: This report provides long-term account performance and trends using impressions, clicks, spend, and average cost per click for individual accounts
+    config : 
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType','impressions']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AccountNumber']
+
+
+  - name: BingAdExtensionByKeywordReport
+    description: This report helps compare how well different versions of your ad extensions are performing for each keyword.
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AccountNumber']
+ 
+  - name: BingAdExtensionDetailReport
+    description: This report provides a detailed and closer look at how each ad extension is performing based on click type for ads 
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['AccountName','AdExtensionId','adGroupId','AdId','CampaignId','DeliveredMatchType','DeviceOS','DeviceType','Network']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AdExtensionId']
+
+  - name: BingAdPerformanceReport
     description: A report on ads performance based on impressions, clicks, spend, and average cost per click for each ad
     config: 
-      materialized: incremental 
-      incremental_strategy: merge 
+      materialized : incremental 
+      incremental_strategy : merge 
       unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'] 
-      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']
 
-  - name: SearchQueryPerformanceReport	
+  - name: BingAudiencePerformanceReport
+    description: This report helps compare delivery performance statistics by audience, ad group, campaign, or account attributes.
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['adGroupId','campaignId','AudienceId']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AudienceId']
+ 
+  - name: BingCampaignPerformanceReport
+    description: This report helps view high-level performance statistics and quality attributes for each campaign or account.
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['CampaignId','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['CampaignId']
+ 
+  - name: BingConversionPerformanceReport
+    description: This report helps understand which campaigns and keywords are leading an audience to complete a purchase or other conversion action
+    config:
+      materialized : incremental
+      incremental_strategy : merge
+      unique_key : ['AdGroupId','KeywordId','DeviceType','impressions']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['AdGroupId']
+ 
+  - name: BingGoalsAndFunnelsReport
+    description: This report helps discover whether your audience completes each step through the land, browse, prospect, and conversion pages of your website
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['campaignId','KeywordId','GoalId','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['campaignId']
+ 
+  - name: BingKeywordPerformanceReport
+    description: This report depicts which keywords are performing well and those that are not
+    config:
+      materialized : incremental
+      incremental_strategy : merge 
+      unique_key : ['CampaignId','adGroupId','KeywordId','AdId','DeliveredMatchType','BidMatchType','DeviceOS','DeviceType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      cluster_by : ['CampaignId']
+
+  - name: BingSearchQueryPerformanceReport
     description: A report on keywords, what your audience is searching for when your ads are shown
     config:
-      materialized: incremental 
-      incremental_strategy: merge 
+      materialized : incremental 
+      incremental_strategy : merge 
       unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': 'date' }
+      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
       cluster_by : ['AccountNumber','AdId']
+
 
 ```
 

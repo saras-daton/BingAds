@@ -1,5 +1,5 @@
 
-{% if var('AdPerformanceReport') %}
+{% if var('BingAdPerformanceReport') %}
     {{ config( enabled = True ) }}
 {% else %}
     {{ config( enabled = False ) }}
@@ -50,7 +50,7 @@ SELECT coalesce(MAX({{daton_batch_runtime()}}) - 2592000000,0) FROM {{ this }}
             {% set store = var('default_storename') %}
         {% endif %}
 
-        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list %}
+        {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list and i in var('raw_table_timezone_offset_hours') %}
             {% set hr = var('raw_table_timezone_offset_hours')[i] %}
         {% else %}
             {% set hr = 0 %}
@@ -113,7 +113,7 @@ SELECT coalesce(MAX({{daton_batch_runtime()}}) - 2592000000,0) FROM {{ this }}
         RevenuePerAssist,
         RevenuePerConversion,
         Spend,
-        cast(TimePeriod as date)TimePeriod,
+        CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,
         TitlePart1,
         TitlePart2,
         coalesce(TopVsOther,'') as TopVsOther,
