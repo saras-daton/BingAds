@@ -37,8 +37,8 @@ If you haven't already, you will need to create a packages.yml file in your DBT 
 
 ```yaml
 packages:
-  - package: saras-daton/bing_ads
-    version: v1.1.0
+  - package: saras-daton/BingAds
+    version: v1.1.1
 ```
 
 # Configuration 
