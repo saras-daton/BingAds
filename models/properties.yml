@@ -33,7 +33,7 @@ models:
     config: 
       materialized : incremental 
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'] 
+      unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType'] 
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber','AdId']
 
@@ -87,6 +87,6 @@ models:
     config:
       materialized : incremental 
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
+      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','KeywordId','SearchQuery','BidMatchType','DeliveredMatchType']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber','AdId']
