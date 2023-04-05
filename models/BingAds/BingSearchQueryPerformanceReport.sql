@@ -105,7 +105,7 @@ SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }}
         {{daton_batch_id()}} as _daton_batch_id,            
         current_timestamp() as _last_updated,
         '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
-        DENSE_RANK() OVER (PARTITION BY AccountNumber,AdId,TopVsOther,DeviceOS,Network,DeviceType,KeywordId,SearchQuery,BidMatchType,DeliveredMatchType order by TimePeriod desc) row_num
+        ROW_NUMBER() OVER (PARTITION BY AccountNumber,AdId,TopVsOther,DeviceOS,Network,DeviceType,KeywordId,SearchQuery,BidMatchType,DeliveredMatchType,TimePeriod order by {{daton_batch_runtime()}} desc) row_num
         from {{i}} a    
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
