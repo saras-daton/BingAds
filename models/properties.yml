@@ -5,7 +5,7 @@ models:
     config : 
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType','impressions']
+      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber']
 
@@ -15,7 +15,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType']
+      unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber']
  
@@ -24,7 +24,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['AccountName','AdExtensionId','adGroupId','AdId','CampaignId','DeliveredMatchType','DeviceOS','DeviceType','Network']
+      unique_key : ['AccountName','AdExtensionId','adGroupId','AdId','CampaignId','DeliveredMatchType','DeviceOS','DeviceType','Network','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AdExtensionId']
 
@@ -42,7 +42,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['adGroupId','campaignId','AudienceId']
+      unique_key : ['adGroupId','campaignId','AudienceId','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AudienceId']
  
@@ -51,7 +51,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['CampaignId','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType']
+      unique_key : ['CampaignId','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['CampaignId']
  
@@ -60,7 +60,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge
-      unique_key : ['AdGroupId','KeywordId','DeviceType','impressions']
+      unique_key : ['AdGroupId','KeywordId','DeviceType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AdGroupId']
  
@@ -69,7 +69,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['campaignId','KeywordId','GoalId','DeviceOS','DeviceType']
+      unique_key : ['campaignId','KeywordId','GoalId','DeviceOS','DeviceType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['campaignId']
  
@@ -78,7 +78,7 @@ models:
     config:
       materialized : incremental
       incremental_strategy : merge 
-      unique_key : ['CampaignId','adGroupId','KeywordId','AdId','DeliveredMatchType','BidMatchType','DeviceOS','DeviceType']
+      unique_key : ['CampaignId','adGroupId','KeywordId','AdId','DeliveredMatchType','BidMatchType','DeviceOS','DeviceType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['CampaignId']
 
@@ -87,6 +87,6 @@ models:
     config:
       materialized : incremental 
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
+      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','KeywordId','SearchQuery','BidMatchType','DeliveredMatchType','TimePeriod']
       partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber','AdId']

@@ -86,7 +86,7 @@
         {{daton_batch_id()}} as _daton_batch_id,
         current_timestamp() as _last_updated,
         '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
-        ROW_NUMBER() OVER (PARTITION BY campaignId,KeywordId,GoalId,DeviceOS order by TimePeriod desc) row_num
+        DENSE_RANK() OVER (PARTITION BY campaignId,KeywordId,GoalId,DeviceOS,TimePeriod order by {{daton_batch_runtime()}} desc) row_num
         from {{i}}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}

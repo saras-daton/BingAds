@@ -141,7 +141,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType','impressions']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber']
 
 
@@ -151,7 +151,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['AccountNumber','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber']
  
   - name: BingAdExtensionDetailReport
@@ -160,7 +160,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['AccountName','AdExtensionId','adGroupId','AdId','CampaignId','DeliveredMatchType','DeviceOS','DeviceType','Network']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AdExtensionId']
 
   - name: BingAdPerformanceReport
@@ -168,8 +168,8 @@ models:
     config: 
       materialized : incremental 
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType','TimePeriod'] 
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      unique_key : ['AccountNumber','AdId','AdType','TopVsOther','BidMatchType','Network','DeliveredMatchType','DeviceOS','DeviceType'] 
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber','AdId']
 
   - name: BingAudiencePerformanceReport
@@ -178,7 +178,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['adGroupId','campaignId','AudienceId']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AudienceId']
  
   - name: BingCampaignPerformanceReport
@@ -187,7 +187,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['CampaignId','BidMatchType','DeliveredMatchType','DeviceOS','DeviceType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['CampaignId']
  
   - name: BingConversionPerformanceReport
@@ -196,7 +196,7 @@ models:
       materialized : incremental
       incremental_strategy : merge
       unique_key : ['AdGroupId','KeywordId','DeviceType','impressions']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AdGroupId']
  
   - name: BingGoalsAndFunnelsReport
@@ -205,7 +205,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['campaignId','KeywordId','GoalId','DeviceOS','DeviceType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['campaignId']
  
   - name: BingKeywordPerformanceReport
@@ -214,7 +214,7 @@ models:
       materialized : incremental
       incremental_strategy : merge 
       unique_key : ['CampaignId','adGroupId','KeywordId','AdId','DeliveredMatchType','BidMatchType','DeviceOS','DeviceType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['CampaignId']
 
   - name: BingSearchQueryPerformanceReport
@@ -222,8 +222,8 @@ models:
     config:
       materialized : incremental 
       incremental_strategy : merge 
-      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','TimePeriod','KeywordId','SearchQuery','BidMatchType']
-      partition_by : { 'field': 'TimePeriod', 'data_type': dbt.type_timestamp() }
+      unique_key : ['AccountNumber','AdId','AdType','DeviceOS','TopVsOther','Network','DeviceType','KeywordId','SearchQuery','BidMatchType','DeliveredMatchType']
+      partition_by : { 'field': 'TimePeriod', 'data_type': 'timestamp', 'granularity': 'day' }
       cluster_by : ['AccountNumber','AdId']
 
 
