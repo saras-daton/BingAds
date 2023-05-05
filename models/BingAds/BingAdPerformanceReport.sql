@@ -79,7 +79,7 @@ SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }}
         AverageCpc,
         AveragePosition,
         COALESCE(BidMatchType,'') as BidMatchType,
-        BusinessName 
+        BusinessName, 
         CampaignId,
         CampaignName,
         CampaignStatus,
