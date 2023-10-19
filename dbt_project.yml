@@ -6,6 +6,7 @@ name: 'BingAds'
 version: '1.0.0'
 config-version: 2
 require-dbt-version: [">=1.0.0", "<2.0.0"]
+profile: edm_data_transformation
 
 vars:
   raw_database: "Bing" #equivalent to project_id in BigQuery
