@@ -3,50 +3,28 @@
 {% else %}
     {{ config( enabled = False ) }}
 {% endif %}
+{% if var('currency_conversion_flag') %}
+--depends_on: {{ ref('ExchangeRates') }}
+{% endif %}
 
+{% set relations = dbt_utils.get_relations_by_pattern(
+schema_pattern=var('raw_schema'),
+table_pattern=var('BingAudiencePerformanceReport_tbl_ptrn'),
+exclude=var('BingAudiencePerformanceReport_tbl_exclude_ptrn'),
+database=var('raw_database')) %}
 
-    {% if is_incremental() %}
-    {%- set max_loaded_query -%}
-    SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }}
-    {% endset %}
-
-    {%- set max_loaded_results = run_query(max_loaded_query) -%}
-
-    {%- if execute -%}
-    {% set max_loaded = max_loaded_results.rows[0].values()[0] %}
+{% for i in relations %}
+    {% if var('get_brandname_from_tablename_flag') %}
+        {% set brand =replace(i,'`','').split('.')[2].split('_')[var('brandname_position_in_tablename')] %}
     {% else %}
-    {% set max_loaded = 0 %}
-    {%- endif -%}
+        {% set brand = var('default_brandname') %}
     {% endif %}
 
-
-    {% set table_name_query %}
-    {{set_table_name('%audience_performance_report')}}    
-    {% endset %}  
-
-    {% set results = run_query(table_name_query) %}
-    {% if execute %}
-        {# Return the first column #}
-        {% set results_list = results.columns[0].values() %}
-        {% set tables_lowercase_list = results.columns[1].values() %}
+    {% if var('get_storename_from_tablename_flag') %}
+        {% set store =replace(i,'`','').split('.')[2].split('_')[var('storename_position_in_tablename')] %}
     {% else %}
-        {% set results_list = [] %}
-        {% set tables_lowercase_list = [] %}
+        {% set store = var('default_storename') %}
     {% endif %}
-
-
-    {% for i in results_list %}
-        {% if var('get_brandname_from_tablename_flag') %}
-             {% set brand =i.split('.')[2].split('_')[var('brandname_position_in_tablename')] %}
-        {% else %}
-             {% set brand = var('default_brandname') %}
-        {% endif %}
-
-        {% if var('get_storename_from_tablename_flag') %}
-            {% set store =i.split('.')[2].split('_')[var('storename_position_in_tablename')] %}
-        {% else %}
-            {% set store = var('default_storename') %}
-        {% endif %}
 
         {% if var('timezone_conversion_flag') and i.lower() in tables_lowercase_list and i in var('raw_table_timezone_offset_hours') %}
             {% set hr = var('raw_table_timezone_offset_hours')[i] %}
@@ -54,9 +32,6 @@
             {% set hr = 0 %}
         {% endif %}
 
-
-        SELECT * {{exclude()}}(row_num)
-    From (
         select
         '{{brand}}' as brand,
         '{{store}}' as store,
@@ -64,28 +39,28 @@
         AccountName	,		
         AccountNumber	,		
         AccountStatus	,		
-        AdGroupId	,		
+        coalesce(AdGroupId,'NA') as AdGroupId	,		
         AdGroupName	,		
         AdGroupStatus	,		
-        AudienceId	,		
+        coalesce(AudienceId,'NA') as AudienceId	,		
         AudienceName	,		
         AudienceType	,		
         AverageCpc	,		
         AveragePosition	,		
         BidAdjustment	,		
-        CampaignId	,		
+        coalesce(CampaignId,'NA') as CampaignId	,		
         CampaignName	,		
         CampaignStatus	,		
-        Clicks	,		
+        cast(Clicks as  int64) as Clicks	,		
         ConversionRate	,		
-        Conversions	,		
+        cast(Conversions as numeric) as Conversions	,		
         CostPerConversion	,		
         Ctr	,		
-        Impressions	,		
+        cast(Impressions as int64) as Impressions	,		
         ReturnOnAdSpend	,		
         Revenue	,		
         RevenuePerConversion	,		
-        Spend	,		
+        cast(Spend as numeric) as Spend	,		
         TargetingSetting	,		
         CAST({{ dbt.dateadd(datepart="hour", interval=hr, from_date_or_timestamp="cast(TimePeriod as timestamp)") }} as {{ dbt.type_timestamp() }}) as TimePeriod,	
 	   	{{daton_user_id()}} as _daton_user_id,
@@ -93,14 +68,20 @@
         {{daton_batch_id()}} as _daton_batch_id,
         current_timestamp() as _last_updated,
         '{{env_var("DBT_CLOUD_RUN_ID", "manual")}}' as _run_id,
-        DENSE_RANK() OVER (PARTITION BY adGroupId,campaignId,AudienceId,TimePeriod order by {{daton_batch_runtime()}} desc) row_num
         from {{i}}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
-            WHERE {{daton_batch_runtime()}}  >= {{max_loaded}}
+            WHERE {{daton_batch_runtime()}}  >= (SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }})
             --WHERE 1=1
             {% endif %}
-        )
-    where row_num =1 
+        Qualify  DENSE_RANK() OVER (PARTITION BY adGroupId,campaignId,AudienceId,TimePeriod order by {{daton_batch_runtime()}} desc) = 1
     {% if not loop.last %} union all {% endif %}
 {% endfor %}		
+
+
+
+
+
+
+
+
