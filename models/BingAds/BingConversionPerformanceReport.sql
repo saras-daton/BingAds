@@ -69,7 +69,7 @@ database=var('raw_database')) %}
         from {{i}}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
-            WHERE {{daton_batch_runtime()}}  >= (SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }})
+           where {{daton_batch_runtime()}}  >= (select coalesce(max(_daton_batch_runtime) - {{ var('BingConversionPerformanceReport_lookback') }},0) from {{ this }})
             --WHERE 1=1
             {% endif %}
         qualify DENSE_RANK() OVER (PARTITION BY AdGroupId,KeywordId,DeviceType,TimePeriod order by {{daton_batch_runtime()}} desc) = 1 

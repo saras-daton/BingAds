@@ -109,7 +109,7 @@ database=var('raw_database')) %}
             {% endif%}	
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
-            WHERE a.{{daton_batch_runtime()}}  >= (SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }})
+           where {{daton_batch_runtime()}}  >= (select coalesce(max(_daton_batch_runtime) - {{ var('BingKeywordPerformanceReport_lookback') }},0) from {{ this }})
             --WHERE 1=1
             {% endif %}
         Qualify ROW_NUMBER() OVER (PARTITION BY CampaignId,adGroupId,KeywordId,AdId,DeliveredMatchType,BidMatchType,DeviceOS,TimePeriod order by {{daton_batch_runtime()}} desc) = 1

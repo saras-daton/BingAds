@@ -87,7 +87,7 @@ database=var('raw_database')) %}
         from {{i}} a    
             {% if is_incremental() %}
             {# /* -- this filter will only be applied on an incremental run */ #}
-            WHERE {{daton_batch_runtime()}}  >= (SELECT coalesce(MAX(_daton_batch_runtime) - 2592000000,0) FROM {{ this }})
+            where {{daton_batch_runtime()}}  >= (select coalesce(max(_daton_batch_runtime) - {{ var('BingSearchQueryPerformanceReport_lookback') }},0) from {{ this }})
             --WHERE 1=1
             {% endif %}
         Qualify ROW_NUMBER() OVER (PARTITION BY AccountNumber,AdId,TopVsOther,DeviceOS,Network,DeviceType,KeywordId,SearchQuery,BidMatchType,DeliveredMatchType,TimePeriod order by {{daton_batch_runtime()}} desc) = 1
