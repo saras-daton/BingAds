@@ -7,10 +7,11 @@ version: '1.0.0'
 config-version: 2
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
+profile: edm_data_transformation
 vars:
-  raw_database: "Bing" #equivalent to project_id in BigQuery
+  raw_database: "edm" #equivalent to project_id in BigQuery
     # Example Database name
-  raw_schema: "Ads" #equivalent to dataset in BigQuery
+  raw_schema: "EDM" #equivalent to dataset in BigQuery
     # Example Schema name
 
   get_brandname_from_tablename_flag: True
@@ -25,8 +26,8 @@ vars:
   default_storename: "" 
     # Example- default_storename: "US" --> for Single Store users, with no Storename in Daton Integration Name
 
-  currency_conversion_flag: False
-  timezone_conversion_flag: False
+  currency_conversion_flag: True
+  timezone_conversion_flag: True
   raw_table_timezone_offset_hours: {
     "Bing.Ads.Brand_US_BingAds_180494538_account_performance_report" : -7,
     "Bing.Ads.Brand_US_BingAds_180494538_ad_extension_by_keyword_report" : -7,
@@ -50,6 +51,48 @@ vars:
   BingGoalsAndFunnelsReport : True
   BingKeywordPerformanceReport : True
   BingSearchQueryPerformanceReport: True
+
+  BingAccountPerformanceReport_tbl_ptrn: '%account_performance_report'
+  BingAccountPerformanceReport_tbl_exclude_ptrn: ''
+  BingAccountPerformanceReport_lookback: 2592000000
+
+  BingAdExtensionByKeywordReport_tbl_ptrn: '%ad_extension_by_keyword_report'
+  BingAdExtensionByKeywordReport_tbl_exclude_ptrn: ''
+  BingAdExtensionByKeywordReport_lookback: 2592000000
+
+  BingAdExtensionDetailReport_tbl_ptrn: '%ad_extension_detail_report'
+  BingAdExtensionDetailReport_tbl_exclude_ptrn: ''
+  BingAdExtensionDetailReport_lookback: 2592000000
+
+  BingAdPerformanceReport_tbl_ptrn: '%ad_performance_report'
+  BingAdPerformanceReport_tbl_exclude_ptrn: ''
+  BingAdPerformanceReport_lookback: 2592000000
+
+  BingAudiencePerformanceReport_tbl_ptrn: '%audience_performance_report'
+  BingAudiencePerformanceReport_tbl_exclude_ptrn: ''
+  BingAudiencePerformanceReport_lookback: 2592000000
+  
+  BingCampaignPerformanceReport_tbl_ptrn: '%campaign_performance_report'
+  BingCampaignPerformanceReport_tbl_exclude_ptrn: ''
+  BingCampaignPerformanceReport_lookback: 2592000000
+  
+  BingConversionPerformanceReport_tbl_ptrn: '%conversion_performance_report'
+  BingConversionPerformanceReport_tbl_exclude_ptrn: ''
+  BingConversionPerformanceReport_lookback: 2592000000
+
+  
+  BingGoalsAndFunnelsReport_tbl_ptrn: '%goals_and_funnels_report'
+  BingGoalsAndFunnelsReport_tbl_exclude_ptrn: ''
+  BingGoalsAndFunnelsReport_lookback: 2592000000
+
+  BingKeywordPerformanceReport_tbl_ptrn: '%keyword_performance_report'
+  BingKeywordPerformanceReport_tbl_exclude_ptrn: ''
+  BingKeywordPerformanceReport_lookback: 2592000000
+
+  BingSearchQueryPerformanceReport_tbl_ptrn: '%search_query_performance_report'
+  BingSearchQueryPerformanceReport_tbl_exclude_ptrn: ''
+  BingSearchQueryPerformanceReport_lookback: 2592000000
+
 
   
 # These configurations specify where dbt should look for different types of files.

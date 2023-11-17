@@ -10,6 +10,7 @@ models:
       cluster_by : ['AccountNumber']
 
 
+
   - name: BingAdExtensionByKeywordReport
     description: This report helps compare how well different versions of your ad extensions are performing for each keyword.
     config:
